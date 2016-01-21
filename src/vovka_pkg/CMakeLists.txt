@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   genmsg
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -52,11 +53,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+ add_service_files(
+   FILES
+   FindMax.srv
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -199,3 +199,11 @@ add_executable(consumer src/consumer.cpp)
 target_link_libraries(consumer ${catkin_LIBRARIES})
 add_dependencies(consumer vovka_pkg_generate_messages_cpp)
 
+
+add_executable(find_max_server src/find_max_server.cpp)
+target_link_libraries(find_max_server ${catkin_LIBRARIES})
+add_dependencies(find_max_server vovka_pkg_gencpp)
+
+add_executable(find_max_client src/find_max_client.cpp)
+target_link_libraries(find_max_client ${catkin_LIBRARIES})
+add_dependencies(find_max_client vovka_pkg_gencpp)

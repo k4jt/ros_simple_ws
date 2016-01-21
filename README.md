@@ -22,3 +22,9 @@ You can mixed them or run all of them!
 - At 2nd terminal window run: rosrun vovka_pkg find_max_server
 - At 3rd terminal window run: rosrun vovka_pkg find_max_client 3 -4 14 13 5
 [*] except different amount of values > 1
+
+Python version:
+- At 1st terminal window run: roscore
+- At 2nd terminal window run: rosrun vovka_pkg find_max_server.py
+- At 3rd terminal window run: rosrun vovka_pkg find_max_client.py 3 -4 14 13 5
+[*] except different amount of values > 1

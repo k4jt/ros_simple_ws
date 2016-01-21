@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  genmsg
 )
 
 ## System dependencies are found with CMake's conventions
@@ -65,10 +66,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -186,3 +187,15 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_executable(producer src/producer.cpp)
+target_link_libraries(producer ${catkin_LIBRARIES})
+add_dependencies(producer vovka_pkg_generate_messages_cpp)
+
+add_executable(consumer src/consumer.cpp)
+target_link_libraries(consumer ${catkin_LIBRARIES})
+add_dependencies(consumer vovka_pkg_generate_messages_cpp)
+

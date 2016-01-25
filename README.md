@@ -32,6 +32,6 @@ Python version:
 
 ### Run rviz
 - [1] $ roslaunch simple_pkg fake_turtlebot.launch
-- [2] $ rosrun rviz rviz -d `roscd simple_pkg`/sim.rviz
+- [2] $ rosrun rviz rviz -d \`rospack find simple_pkg\`/sim.rviz
 - [3] $ rosrun simple_pkg circle_movement.py
 

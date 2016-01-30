@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <physics type="ode">
+      <gravity>0 0 -9.81</gravity>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>50</iters>
+          <sor>1.4</sor>
+        </solver>
+        <constraints>
+          <cfm>0</cfm>
+          <erp>1</erp>
+          <contact_max_correcting_vel>0</contact_max_correcting_vel>
+          <contact_surface_layer>0</contact_surface_layer>
+        </constraints>
+      </ode>
+    </physics>
+
+    
+  <model name="box">
+    <link name="link">
+      <visual name="visual">
+
+        <geometry>
+          <cylinder>
+            <radius>1</radius>
+            <length>1.2</length>
+          </cylinder>
+        </geometry>
+
+      </visual>
+    </link>
+  </model>
+    
+    <!--physics type="ode">
+      ...
+    </physics>
+    
+    <scene>
+      ...
+    </scene>
+
+    <model name="box">
+      ...
+    </model>
+
+    <model name="sphere">
+      ...
+    </model>
+
+    <light name="spotlight">
+      ...
+    </light-->
+
+  </world>
+</sdf>

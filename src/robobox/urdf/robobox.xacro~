@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<robot name="robobox" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="width" value="0.63" />
+    <xacro:property name="length" value="1.2" />
+    <xacro:property name="height" value="0.778" />
+    <xacro:property name="pi" value="3.1415" />
+    <xacro:property name="wheel_radius" value="0.05" />
+
+    <material name="black">
+        <color rgba="0 0 0 1" />
+    </material>
+
+    <xacro:macro name="default_inertial" params="mass">
+        <inertial>
+            <mass value="${mass}" />
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+        </inertial>
+    </xacro:macro>
+
+
+    <xacro:macro name="wheel" params="prefix suffix reflect_x reflect_y">
+        <link name="${prefix}_${suffix}_wheel">
+            <visual>
+                <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="0.02" />
+                </geometry>
+                <material name="black" />
+                <origin xyz=" 0 0 0" rpy="0 0 0" />
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="0.02" />
+                </geometry>
+                <material name="black" />
+                <origin xyz=" 0 0 0" rpy="0 0 0" />
+            </collision>
+            <xacro:default_inertial mass="1" />
+        </link>
+        <joint name="${prefix}_${suffix}_wheel_joint" type="continuous">
+            <axis xyz="0 1 0" rpy="0 0 0" />
+            <parent link="base" />
+            <child link="${prefix}_${suffix}_wheel" />
+            <origin xyz="${length * reflect_x / 3} ${width * reflect_y / 3} -${height/2 + wheel_radius}" rpy="0 0 0" />
+        </joint>
+
+        <!--transmission name="${prefix}_${suffix}_trans">
+              <type>transmission_interface/SimpleTransmission</type>
+              <joint name="${prefix}_${suffix}_wheel_hinge"/>
+              <actuator name="${prefix}_${suffix}_Motor">
+                    <hardwareInterface>EffortJointInterface</hardwareInterface>
+                    <mechanicalReduction>10</mechanicalReduction>
+              </actuator>
+        </transmission-->
+
+    </xacro:macro>
+
+
+    <link name="base">
+        <visual>
+            <geometry>
+                <box size="${length} ${width} ${height}" />
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${length} ${width} ${height}" />
+            </geometry>
+        </collision>
+        <xacro:default_inertial mass="100" />
+    </link>
+
+    <!--xacro:wheel prefix="front" suffix="left" reflect_x="1" reflect_y="1"/>
+    <xacro:wheel prefix="front" suffix="right" reflect_x="1" reflect_y="-1" /-->
+    <xacro:wheel prefix="back" suffix="left" reflect_x="-1" reflect_y="1" />
+    <xacro:wheel prefix="back" suffix="right" reflect_x="-1" reflect_y="-1" />
+
+
+</robot>

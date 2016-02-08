@@ -18,52 +18,44 @@
     <xacro:macro name="default_inertial" params="mass">
         <inertial>
             <mass value="${mass}" />
+            <origin xyz=" 0 0 0"/>
             <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
         </inertial>
     </xacro:macro>
 
 
-    <xacro:macro name="wheel" params="prefix suffix offset_x offset_y offset_z radius length">
+    <xacro:macro name="wheel" params="prefix suffix ratio_x ratio_y offset_z wheel_radius wheel_length joint_type">
         <link name="${prefix}_${suffix}_wheel">
             <visual>
-                <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+                <origin xyz="0 0 0" rpy="0 ${pi/2} ${pi/2}" />
                 <geometry>
-                    <cylinder radius="${radius}" length="${length}" />
+                    <cylinder radius="${wheel_radius}" length="${wheel_length}" />
                 </geometry>
                 <material name="black" />
-                <origin xyz=" 0 0 0" rpy="0 0 0" />
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+                <origin xyz="0 0 0" rpy="0 ${pi/2} ${pi/2}" />
                 <geometry>
-                    <cylinder radius="${radius}" length="${length}" />
+                    <cylinder radius="${wheel_radius}" length="${wheel_length}" />
                 </geometry>
-                <material name="black" />
-                <origin xyz=" 0 0 0" rpy="0 0 0" />
             </collision>
-            <xacro:default_inertial mass="1" />
-            <gazebo reference="${prefix}_${suffix}_wheel">
-                <material>Gazebo/Black</material>
-            </gazebo>
+            <xacro:default_inertial mass="0.01" />
         </link>
-        <joint name="${prefix}_${suffix}_wheel_joint" type="continuous">
-            <axis xyz="0 1 0" rpy="0 0 0" />
+        <joint name="${prefix}_${suffix}_wheel_joint" type="${joint_type}">
+            <axis xyz="0 1 0" />
             <parent link="base_link" />
             <child link="${prefix}_${suffix}_wheel" />
-            <origin xyz="${length * offset_x} ${width * offset_y} -${height/2 + offset_z}" rpy="0 0 0" />
+            <origin xyz="${length * ratio_x} ${width * ratio_y} -${height/2 + offset_z}" rpy="0 0 0" />
         </joint>
-
-        <!--transmission name="${prefix}_${suffix}_trans">
-              <type>transmission_interface/SimpleTransmission</type>
-              <joint name="${prefix}_${suffix}_wheel_hinge"/>
-              <actuator name="${prefix}_${suffix}_Motor">
-                    <hardwareInterface>EffortJointInterface</hardwareInterface>
-                    <mechanicalReduction>10</mechanicalReduction>
-              </actuator>
-        </transmission-->
-
     </xacro:macro>
 
+    <xacro:macro name="small_wheel" params="prefix suffix ratio_x">
+        <xacro:wheel prefix="${prefix}" suffix="${suffix}" ratio_x="${ratio_x}" ratio_y="0" offset_z="-${small_wheel_radius}" wheel_radius="${small_wheel_radius}" wheel_length="${small_wheel_length}" joint_type="fixed"/>
+    </xacro:macro>
+
+    <xacro:macro name="big_wheel" params="prefix suffix ratio_y">
+        <xacro:wheel prefix="${prefix}" suffix="${suffix}" ratio_x="0" ratio_y="${ratio_y}" offset_z="-${big_wheel_radius / 2}" wheel_radius="${big_wheel_radius}" wheel_length="${big_wheel_length}" joint_type="continuous"/>
+    </xacro:macro>
 
     <link name="base_link">
         <visual>
@@ -103,13 +95,13 @@
         <child link="base_link" />
     </joint>
 
-    <xacro:wheel prefix="front" suffix="mid" offset_x="15.5" offset_y="0" offset_z="0" radius="${small_wheel_radius}" length="${small_wheel_length}"/>
-    <xacro:wheel prefix="back" suffix="mid" offset_x="-15.5" offset_y="0" offset_z="0" radius="${small_wheel_radius}" length="${small_wheel_length}"/>
+    <xacro:small_wheel prefix="front" suffix="mid" ratio_x="0.5" />
+    <xacro:small_wheel prefix="back" suffix="mid" ratio_x="-0.5" />
 
-    <xacro:wheel prefix="mid" suffix="left" offset_x="0" offset_y="0.5" offset_z="-${big_wheel_radius / 2}" radius="${big_wheel_radius}" length="${big_wheel_length}"/>
-    <xacro:wheel prefix="mid" suffix="right" offset_x="0" offset_y="-0.5" offset_z="-${big_wheel_radius / 2}" radius="${big_wheel_radius}" length="${big_wheel_length}"/>
+    <xacro:big_wheel prefix="mid" suffix="left" ratio_y="0.5" />
+    <xacro:big_wheel prefix="mid" suffix="right" ratio_y="-0.5" />
 
-  <!-- Camera >
+  <!-- Camera -->
   <joint name="camera_joint" type="fixed">
     <axis xyz="0 1 0" />
     <origin xyz="${length/2} 0 ${height/2 + 0.1}" rpy="0 0 0"/>
@@ -176,19 +168,18 @@
         <distortionT2>0.0</distortionT2>
       </plugin>
     </sensor>
-  </gazebo-->
+  </gazebo>
   
   
   
-   <!-- Hokuyo Laser -->
+   <!-- Hokuyo Laser >
     <joint name="hokuyo_joint" type="fixed">
         <axis xyz="0 1 0" />
-        <origin xyz="${length/2} 0 ${height/2}" rpy="0 0 0"/>
+        <origin xyz="${length/2} 0 ${height/2+0.1}" rpy="0 0 0"/>
         <parent link="base_link"/>
         <child link="hokuyo_link"/>
       </joint>
 
-  <!-- Hokuyo Laser -->
   <link name="hokuyo_link">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -212,7 +203,6 @@
     </inertial>
   </link>
   
-  <!-- hokuyo -->
   <gazebo reference="hokuyo_link">
     <sensor type="gpu_ray" name="head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
@@ -223,21 +213,17 @@
           <horizontal>
             <samples>720</samples>
             <resolution>1</resolution>
-            <min_angle>-1.570796</min_angle>
-            <max_angle>1.570796</max_angle>
+            <min_angle>-3.1570796</min_angle>
+            <max_angle>3.1570796</max_angle>
           </horizontal>
         </scan>
         <range>
           <min>0.10</min>
-          <max>30.0</max>
+          <max>300.0</max>
           <resolution>0.01</resolution>
         </range>
         <noise>
           <type>gaussian</type>
-          <!-- Noise parameters based on published spec for Hokuyo laser
-               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
-               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
-               reading. -->
           <mean>0.0</mean>
           <stddev>0.01</stddev>
         </noise>
@@ -247,10 +233,75 @@
         <frameName>hokuyo_link</frameName>
       </plugin>
     </sensor>
-  </gazebo>
+  </gazebo-->
    
+<!-- Hokuyo LIDAR for simulation -->
+  <xacro:macro name="hokuyo_laser">
+    <gazebo reference="base_laser_link">
+      <sensor type="ray" name="laser">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>40</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>720</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.1415</min_angle>
+              <max_angle>3.1415</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.10</min>
+            <max>30.0</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>Gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <plugin name="hokuyo_node" filename="libgazebo_ros_laser.so">
+          <topicName>/robobox/laser/scan</topicName>
+          <frameName>base_laser_link</frameName>
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
 
-    <gazebo>
+  <xacro:macro name="sensor_hokuyo">
+    <joint name="laser" type="fixed">
+      <origin xyz="${length/2} 0 ${height/2+0.1}" rpy="0 0 0"/>
+      <!--origin xyz="0.15 0.0 0.360" rpy="3.14159 0.0 0.0" /-->
+      <parent link="base_link" />
+      <child link="base_laser_link" />
+    </joint>
+
+    <link name="base_laser_link">
+      <visual>
+        <geometry>
+          <box size="0.00 0.05 0.06" />
+        </geometry>
+        <material name="black" />
+      </visual>
+      <inertial>
+        <mass value="0.000001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0"
+          izz="0.0001" />
+      </inertial>
+    </link>
+
+    <!-- Set up laser gazebo details -->
+    <hokuyo_laser />
+  </xacro:macro>
+
+    <sensor_hokuyo />
+
+
+    <!--gazebo>
       <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so" />
       <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
         <alwaysOn>true</alwaysOn>
@@ -266,6 +317,6 @@
         <odometryFrame>odom</odometryFrame>
         <robotBaseFrame>base_footprint</robotBaseFrame>
       </plugin>
-    </gazebo>
+    </gazebo-->
     
 </robot>

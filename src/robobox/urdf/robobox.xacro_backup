@@ -310,7 +310,7 @@
     <sensor_hokuyo />
 
 
-    <!--gazebo>
+    <gazebo>
       <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so" />
       <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
         <alwaysOn>true</alwaysOn>
@@ -326,6 +326,6 @@
         <odometryFrame>odom</odometryFrame>
         <robotBaseFrame>base_footprint</robotBaseFrame>
       </plugin>
-    </gazebo-->
+    </gazebo>
     
 </robot>

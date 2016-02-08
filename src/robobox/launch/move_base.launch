@@ -10,13 +10,11 @@
      </include>
      
     
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find robobox)/urdf/robobox.xacro'" />
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find robobox)/urdf/robobox.xacro_backup'" />
 
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
         
-    
-    <!--node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model robobox -param robot_description -z 1 -x -1 -y -1" /-->
     <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -z 1 -model robobox" respawn="false" output="screen" />
    
      
@@ -28,13 +26,7 @@
   <!-- For fake localization we need a static transform between /odom and /map -->
   <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 /map /odom 100" />
 
-    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-       <!--rosparam file="$(find robobox)/launch/costmap_common_params.yaml" command="load" ns="global_costmap" />
-       <rosparam file="$(find robobox)/launch/costmap_common_params.yaml" command="load" ns="local_costmap" />
-       <rosparam file="$(find robobox)/launch/local_costmap_params.yaml" command="load" />
-       <rosparam file="$(find robobox)/launch/global_costmap_params.yaml" command="load" />
-       <rosparam file="$(find robobox)/launch/base_local_planner_params.yaml" command="load" /-->
-       
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">       
        <rosparam file="$(find robobox)/config/fake/costmap_common_params.yaml" command="load" ns="global_costmap" />
        <rosparam file="$(find robobox)/config/fake/costmap_common_params.yaml" command="load" ns="local_costmap" />
        <rosparam file="$(find robobox)/config/fake/local_costmap_params.yaml" command="load" />
